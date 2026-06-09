@@ -30,7 +30,7 @@ dependencies = [
     "tqdm>=4.67.1",
     "typing-extensions>=4.14.0",
     "yfinance>=0.2.63",
-    "streamlit>=1.40",
+    "streamlit==1.55.0",
     "pykrx>=1.0.45",
     "python-docx>=1.1.0",
 ]
