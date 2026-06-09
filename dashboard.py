@@ -57,6 +57,15 @@ _fix_ssl()
 
 import streamlit as st  # noqa: E402
 
+# Streamlit Cloud: secrets.toml 의 값을 환경변수로 노출(ANTHROPIC_API_KEY·
+# TRADINGAGENTS_*·TA_DASH_PASSWORD 등을 프레임워크가 os.environ 에서 읽도록).
+try:
+    for _k, _v in st.secrets.items():
+        if isinstance(_v, str):
+            os.environ.setdefault(_k, _v)
+except Exception:
+    pass
+
 ANALYSTS = [("market", "시장(기술적)"), ("social", "소셜 센티먼트"),
             ("news", "뉴스/매크로"), ("fundamentals", "펀더멘털")]
 DEPTH = {"Shallow (빠름·저비용, 1라운드)": 1, "Medium (2라운드)": 2, "Deep (3라운드)": 3}
