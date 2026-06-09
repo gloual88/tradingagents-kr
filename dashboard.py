@@ -184,8 +184,10 @@ with st.sidebar:
                             default=[a[0] for a in ANALYSTS],
                             format_func=lambda k: dict(ANALYSTS)[k],
                             help="적게 고르면 빠르지만 커버리지가 줄어듭니다.")
-    benchmark = st.text_input("벤치마크 티커", value="^KS11",
-                              help="한국 종목은 ^KS11 권장. 미국은 비워도 됨.")
+    benchmark = st.text_input(
+        "벤치마크 티커 (비우면 자동)", value="",
+        help="비우면 입력 티커에 맞춰 자동 선택: .KS/.KQ → ^KS11(KOSPI), "
+             "그 외 → SPY. 직접 지정하려면 입력하세요.")
     language = st.selectbox("리포트 언어", ["Korean", "English"], index=0)
 
     with st.expander("모델 (고급)"):
@@ -212,8 +214,10 @@ if run:
         st.warning("분석가를 1개 이상 선택하세요.")
         st.stop()
     analysts = [k for k, _ in ANALYSTS if k in picked]  # 고정 순서
-    if benchmark.strip():
-        os.environ["TRADINGAGENTS_BENCHMARK_TICKER"] = benchmark.strip()
+    # 벤치마크: 직접 입력값 우선, 비우면 티커로 자동(.KS/.KQ→^KS11, 그 외→SPY)
+    _t = ticker.strip().upper()
+    bench = benchmark.strip() or ("^KS11" if _t.endswith((".KS", ".KQ")) else "SPY")
+    os.environ["TRADINGAGENTS_BENCHMARK_TICKER"] = bench
     os.environ["TRADINGAGENTS_OUTPUT_LANGUAGE"] = language
     cfg = build_config(provider.strip(), deep.strip(), quick.strip(),
                        DEPTH[depth_label], effort.strip())
